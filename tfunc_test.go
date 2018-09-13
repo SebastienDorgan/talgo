@@ -3,58 +3,64 @@ package tfunc_test
 import (
 	"testing"
 
-	"github.com/CS-SI/tfunc"
+	"github.com/SebastienDorgan/tfunc"
+	"github.com/stretchr/testify/assert"
 )
 
-type IntSeries []int
+type IntList []int
 
-func (s IntSeries) Len() int {
+func (s IntList) Len() int {
 	return len(s)
 }
 
-func Incr(s IntSeries, step int) tfunc.Visitor {
+func Incr(s IntList, step int) tfunc.Visitor {
 	return func(i int) {
 		s[i] = s[i] + step
 	}
 }
 
-func GreaterThan(s IntSeries, value int) tfunc.Predicate {
+func GreaterThan(s IntList, value int) tfunc.Predicate {
 	return func(i int) bool {
 		return s[i] >= value
 	}
 }
 
-func Accumulator(s IntSeries, sum *int) tfunc.Visitor {
+func Acc(s IntList, sum *int) tfunc.Visitor {
 	return func(i int) {
 		*sum += s[i]
 	}
 }
 
 func Test(t *testing.T) {
-	s := IntSeries{1, 2, 4}
-	//Map
+	s := IntList{1, 2, 4}
+	//Map Incr over s
 	tfunc.Walk(s, Incr(s, 3))
-	for _, v := range s {
-		println(v)
-	}
+	assert.Equal(t, 4, s[0])
+	assert.Equal(t, 5, s[1])
+	assert.Equal(t, 7, s[2])
 
+	//Find first element greater or equal to  5
 	r := tfunc.FindFirst(s, GreaterThan(s, 5))
-	println(r)
+	assert.Equal(t, 1, r)
 
+	//Find last element greater or equal to 5
 	r = tfunc.FindLast(s, GreaterThan(s, 5))
-	println(r)
+	assert.Equal(t, 2, r)
 
+	//Checks if at least one element is greater or equal to 5
 	b := tfunc.Any(s, GreaterThan(s, 5))
-	println(b)
+	assert.True(t, b)
 
+	//Checks if at least one element is greater or equal to 0
 	b = tfunc.Any(s, tfunc.Negate(GreaterThan(s, 0)))
-	println(b)
+	assert.False(t, b)
 
+	//Checks if all elements are greater or equal to 5
 	b = tfunc.All(s, GreaterThan(s, 5))
-	println(b)
+	assert.False(t, b)
 
 	//Reduce
-	sum := 0
-	tfunc.Walk(s, Accumulator(s, &sum))
-	println(sum)
+	sum := 3
+	tfunc.Walk(s, Acc(s, &sum))
+	assert.Equal(t, 19, sum)
 }
