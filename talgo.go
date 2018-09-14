@@ -49,7 +49,7 @@ func FindLast(s Collection, p Predicate) int {
 //FindAll find all the elements of a series that satisfies predicate p
 func FindAll(s Collection, p Predicate) []int {
 	indexes := []int{}
-	for i := s.Len() - 1; i >= 0; i-- {
+	for i := 0; i < s.Len(); i++ {
 		if p(i) {
 			indexes = append(indexes, i)
 		}
