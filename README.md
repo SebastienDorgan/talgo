@@ -22,38 +22,39 @@
 package talgo_test
 
 import (
+	"sort"
 	"testing"
 
 	"github.com/SebastienDorgan/talgo"
 	"github.com/stretchr/testify/assert"
 )
 
-type IntList []int
-
-func (s IntList) Len() int {
-	return len(s)
-}
-
-func Incr(s IntList, step int) talgo.Visitor {
+func Incr(s sort.IntSlice, step int) talgo.Visitor {
 	return func(i int) {
 		s[i] = s[i] + step
 	}
 }
 
-func GreaterThan(s IntList, value int) talgo.Predicate {
+func GreaterThan(s sort.IntSlice, value int) talgo.Predicate {
 	return func(i int) bool {
 		return s[i] >= value
 	}
 }
 
-func Acc(s IntList, sum *int) talgo.Visitor {
+func Acc(s sort.IntSlice, sum *int) talgo.Visitor {
 	return func(i int) {
 		*sum += s[i]
 	}
 }
 
+func MultiplyBy(s sort.Float64Slice, x float64) talgo.Visitor {
+	return func(i int) {
+		s[i] = s[i] * x
+	}
+}
+
 func Test(t *testing.T) {
-	s := IntList{1, 2, 4}
+	s := sort.IntSlice{1, 2, 4}
 	//Map Incr over s
 	talgo.Walk(s, Incr(s, 3))
 	assert.Equal(t, 4, s[0])
@@ -84,6 +85,12 @@ func Test(t *testing.T) {
 	sum := 3
 	talgo.Walk(s, Acc(s, &sum))
 	assert.Equal(t, 19, sum)
+
+	sf := sort.Float64Slice{1.5, 2.5, 3.5}
+	talgo.Walk(sf, MultiplyBy(sf, 2.))
+	assert.Equal(t, 3., sf[0])
+	assert.Equal(t, 5., sf[1])
+	assert.Equal(t, 7., sf[2])
 }
 
 ```
