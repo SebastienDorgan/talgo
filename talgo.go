@@ -26,7 +26,7 @@ func Walk(s Collection, m Visitor) {
 	}
 }
 
-//FindFirst find the first element of a series that matches predicate p
+//FindFirst find the first element of a series that satisfies predicate p
 func FindFirst(s Collection, p Predicate) int {
 	for i := 0; i < s.Len(); i++ {
 		if p(i) {
@@ -36,7 +36,7 @@ func FindFirst(s Collection, p Predicate) int {
 	return -1
 }
 
-//FindLast find the lats element of a series that matches predicate p
+//FindLast find the last element of a series that satisfies predicate p
 func FindLast(s Collection, p Predicate) int {
 	for i := s.Len() - 1; i >= 0; i-- {
 		if p(i) {
@@ -44,6 +44,17 @@ func FindLast(s Collection, p Predicate) int {
 		}
 	}
 	return -1
+}
+
+//FindAll find all the elements of a series that satisfies predicate p
+func FindAll(s Collection, p Predicate) []int {
+	indexes := []int{}
+	for i := s.Len() - 1; i >= 0; i-- {
+		if p(i) {
+			indexes = append(indexes, i)
+		}
+	}
+	return indexes
 }
 
 //Any checks if at least one element of the serie match predicate p
