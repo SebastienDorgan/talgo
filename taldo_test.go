@@ -1,9 +1,9 @@
-package tfunc_test
+package talgo_test
 
 import (
 	"testing"
 
-	"github.com/SebastienDorgan/tfunc"
+	"github.com/SebastienDorgan/keep/tfunc"
 	"github.com/stretchr/testify/assert"
 )
 

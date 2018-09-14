@@ -1,4 +1,4 @@
-package tfunc
+package talgo
 
 //Visitor defines a visitor function
 type Visitor func(int)
