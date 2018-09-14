@@ -1,15 +1,16 @@
 package talgo
 
-//Visitor defines a visitor function
-type Visitor func(int)
-
-//Collection defines a series
+//Collection a type the satisfies Collection interface can be used by the routines of this package
 type Collection interface {
+	//Len is the numbre of elements of the collection
 	Len() int
 }
 
-//Predicate defines a predicate function
-type Predicate func(int) bool
+//Visitor defines a function that applies to the ith elements of a collection
+type Visitor func(i int)
+
+//Predicate defines a predicate that applies to the ith elements of a collection
+type Predicate func(i int) bool
 
 //Negate negates a predictae
 func Negate(p Predicate) Predicate {
