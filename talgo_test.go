@@ -8,34 +8,28 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func Incr(s sort.IntSlice, step int) talgo.Visitor {
-	return func(i int) {
-		s[i] = s[i] + step
-	}
-}
-
 func GreaterThan(s sort.IntSlice, value int) talgo.Predicate {
 	return func(i int) bool {
 		return s[i] >= value
 	}
 }
 
-func Acc(s sort.IntSlice, sum *int) talgo.Visitor {
-	return func(i int) {
-		*sum += s[i]
-	}
+type BankAccount struct {
+	ID      string
+	Balance int64
 }
 
-func MultiplyBy(s sort.Float64Slice, x float64) talgo.Visitor {
-	return func(i int) {
-		s[i] = s[i] * x
-	}
-}
+type BankAccounts []BankAccount
 
+func (b BankAccounts) Len() int {
+	return len(b)
+}
 func Test(t *testing.T) {
 	s := sort.IntSlice{1, 2, 4}
 	//Map Incr over s
-	talgo.Walk(s, Incr(s, 3))
+	talgo.Walk(s, func(i int) {
+		s[i] += 3
+	})
 	assert.Equal(t, 4, s[0])
 	assert.Equal(t, 5, s[1])
 	assert.Equal(t, 7, s[2])
@@ -45,7 +39,9 @@ func Test(t *testing.T) {
 	assert.Equal(t, 1, r)
 
 	//Find last element greater or equal to 5
-	r = talgo.FindLast(s, GreaterThan(s, 5))
+	r = talgo.FindLast(s, func(i int) bool {
+		return s[i] >= 5
+	})
 	assert.Equal(t, 2, r)
 
 	//Find last element greater or equal to 5
@@ -65,15 +61,47 @@ func Test(t *testing.T) {
 	b = talgo.All(s, GreaterThan(s, 5))
 	assert.False(t, b)
 
-	//Reduce
+	//Reduce by adding all elements of the list to 3
 	sum := 3
-	talgo.Walk(s, Acc(s, &sum))
+	talgo.Walk(s, func(i int) {
+		sum += s[i]
+	})
 	assert.Equal(t, 19, sum)
 
+	//Multiply by 2 all elements of the list
 	sf := sort.Float64Slice{1.5, 2.5, 3.5}
-	talgo.Walk(sf, MultiplyBy(sf, 2.))
+	talgo.Walk(sf, func(i int) {
+		sf[i] *= 2.
+	})
 	assert.Equal(t, 3., sf[0])
 	assert.Equal(t, 5., sf[1])
 	assert.Equal(t, 7., sf[2])
+
+	//Separate odd and even elements
+	ints := sort.IntSlice{1, 2, 3, 4, 5, 6, 7, 8, 9}
+	even := []int{}
+	odd := []int{}
+
+	talgo.Walk(ints, func(i int) {
+		if ints[i]%2 == 0 {
+			even = append(even, ints[i])
+		} else {
+			odd = append(odd, ints[i])
+		}
+	})
+
+	//Find bank accounts in deficit
+	bankAccounts := BankAccounts{
+		BankAccount{ID: "0", Balance: 1500},
+		BankAccount{ID: "1", Balance: -500},
+		BankAccount{ID: "2", Balance: 0},
+	}
+	accountInDeficit := []string{}
+	talgo.Walk(bankAccounts, func(i int) {
+		if bankAccounts[i].Balance < 0 {
+			accountInDeficit = append(accountInDeficit, bankAccounts[i].ID)
+		}
+	})
+	assert.Equal(t, "1", accountInDeficit[0])
 
 }
