@@ -6,11 +6,14 @@ type Collection interface {
 	Len() int
 }
 
-//Visitor defines a function that applies to the ith elements of a collection
-type Visitor func(i int)
+//Function defines a function that applies to the ith elements of a collection
+type Function func(i int)
 
 //Predicate defines a predicate that applies to the ith elements of a collection
 type Predicate func(i int) bool
+
+//Selector defines a selection function, a selector return i value or j value
+type Selector func(i, j int) int
 
 //Negate negates a predicate
 func Negate(p Predicate) Predicate {
@@ -40,16 +43,32 @@ func Xor(p1 Predicate, p2 Predicate) Predicate {
 	}
 }
 
-//Walk apply m to each element of s
-func Walk(s Collection, m Visitor) {
-	for i := 0; i < s.Len(); i++ {
-		m(i)
+//ForEach apply m to each element of s
+func ForEach(c Collection, f Function) {
+	for i := 0; i < c.Len(); i++ {
+		f(i)
 	}
 }
 
+//ReverseForEach apply m to each element of s in reverse order
+func ReverseForEach(c Collection, f Function) {
+	for i := c.Len() - 1; i >= 0; i-- {
+		f(i)
+	}
+}
+
+//Best select best element against selector s
+func Best(c Collection, s Selector) int {
+	selected := 0
+	for i := 1; i < c.Len(); i++ {
+		selected = s(selected, i)
+	}
+	return selected
+}
+
 //FindFirst find the first element of a series that satisfies predicate p
-func FindFirst(s Collection, p Predicate) int {
-	for i := 0; i < s.Len(); i++ {
+func FindFirst(c Collection, p Predicate) int {
+	for i := 0; i < c.Len(); i++ {
 		if p(i) {
 			return i
 		}
@@ -58,8 +77,8 @@ func FindFirst(s Collection, p Predicate) int {
 }
 
 //FindLast find the last element of a series that satisfies predicate p
-func FindLast(s Collection, p Predicate) int {
-	for i := s.Len() - 1; i >= 0; i-- {
+func FindLast(c Collection, p Predicate) int {
+	for i := c.Len() - 1; i >= 0; i-- {
 		if p(i) {
 			return i
 		}
@@ -68,9 +87,9 @@ func FindLast(s Collection, p Predicate) int {
 }
 
 //FindAll find all the elements of a series that satisfies predicate p
-func FindAll(s Collection, p Predicate) []int {
+func FindAll(c Collection, p Predicate) []int {
 	indexes := []int{}
-	for i := 0; i < s.Len(); i++ {
+	for i := 0; i < c.Len(); i++ {
 		if p(i) {
 			indexes = append(indexes, i)
 		}
@@ -78,12 +97,33 @@ func FindAll(s Collection, p Predicate) []int {
 	return indexes
 }
 
-//Any checks if at least one element of the serie match predicate p
-func Any(s Collection, p Predicate) bool {
-	return FindFirst(s, p) >= 0
+//CountItems counts number of items that satisfies predicate p
+func CountItems(c Collection, p Predicate) int {
+	cpt := 0
+	for i := 0; i < c.Len(); i++ {
+		if p(i) {
+			cpt++
+		}
+	}
+	return cpt
 }
 
-//All checks if all elements of the serie match predicate p
+//Any checks if at least one element of the serie satisfies predicate p
+func Any(c Collection, p Predicate) bool {
+	return FindFirst(c, p) >= 0
+}
+
+//None checks if at none element of the serie satisfies predicate p
+func None(c Collection, p Predicate) bool {
+	return !Any(c, p)
+}
+
+//All checks if all elements of the serie satisfy predicate p
 func All(s Collection, p Predicate) bool {
-	return !Any(s, p)
+	for i := 0; i < s.Len(); i++ {
+		if !p(i) {
+			return false
+		}
+	}
+	return true
 }
