@@ -77,6 +77,7 @@ func Test(t *testing.T) {
 	assert.Equal(t, 3., sf[1])
 	assert.Equal(t, 7., sf[2])
 
+	//Find index of the min value
 	min := func(i, j int) int {
 		if sf[i] >= sf[j] {
 			return j
@@ -85,10 +86,11 @@ func Test(t *testing.T) {
 		}
 	}
 
-	minargs := talgo.Best(sf, min)
+	minargs := talgo.Select(sf, min)
 
 	assert.Equal(t, 1, minargs)
 
+	//Find index of the max value
 	max := func(i, j int) int {
 		if sf[i] <= sf[j] {
 			return j
@@ -97,7 +99,7 @@ func Test(t *testing.T) {
 		}
 	}
 
-	maxargs := talgo.Best(sf, max)
+	maxargs := talgo.Select(sf, max)
 
 	assert.Equal(t, 2, maxargs)
 

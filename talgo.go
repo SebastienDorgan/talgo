@@ -57,8 +57,8 @@ func ReverseForEach(c Collection, f Function) {
 	}
 }
 
-//Best select best element against selector s
-func Best(c Collection, s Selector) int {
+//Select select best element against selector s
+func Select(c Collection, s Selector) int {
 	selected := 0
 	for i := 1; i < c.Len(); i++ {
 		selected = s(selected, i)
@@ -119,8 +119,8 @@ func None(c Collection, p Predicate) bool {
 }
 
 //All checks if all elements of the serie satisfy predicate p
-func All(s Collection, p Predicate) bool {
-	for i := 0; i < s.Len(); i++ {
+func All(c Collection, p Predicate) bool {
+	for i := 0; i < c.Len(); i++ {
 		if !p(i) {
 			return false
 		}

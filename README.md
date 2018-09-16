@@ -48,7 +48,7 @@ func (b BankAccounts) Len() int {
 func Test(t *testing.T) {
 	s := sort.IntSlice{1, 2, 4}
 	//Map Incr over s
-	talgo.Walk(s, func(i int) {
+	talgo.ForEach(s, func(i int) {
 		s[i] += 3
 	})
 	assert.Equal(t, 4, s[0])
@@ -84,26 +84,52 @@ func Test(t *testing.T) {
 
 	//Reduce by adding all elements of the list to 3
 	sum := 3
-	talgo.Walk(s, func(i int) {
+	talgo.ForEach(s, func(i int) {
 		sum += s[i]
 	})
 	assert.Equal(t, 19, sum)
 
 	//Multiply by 2 all elements of the list
-	sf := sort.Float64Slice{1.5, 2.5, 3.5}
-	talgo.Walk(sf, func(i int) {
+	sf := sort.Float64Slice{2.5, 1.5, 3.5}
+	talgo.ForEach(sf, func(i int) {
 		sf[i] *= 2.
 	})
-	assert.Equal(t, 3., sf[0])
-	assert.Equal(t, 5., sf[1])
+	assert.Equal(t, 5., sf[0])
+	assert.Equal(t, 3., sf[1])
 	assert.Equal(t, 7., sf[2])
+
+	//Find index of the min value
+	min := func(i, j int) int {
+		if sf[i] >= sf[j] {
+			return j
+		} else {
+			return i
+		}
+	}
+
+	minargs := talgo.Select(sf, min)
+
+	assert.Equal(t, 1, minargs)
+
+	//Find index of the max value
+	max := func(i, j int) int {
+		if sf[i] <= sf[j] {
+			return j
+		} else {
+			return i
+		}
+	}
+
+	maxargs := talgo.Select(sf, max)
+
+	assert.Equal(t, 2, maxargs)
 
 	//Separate odd and even elements
 	ints := sort.IntSlice{1, 2, 3, 4, 5, 6, 7, 8, 9}
 	even := []int{}
 	odd := []int{}
 
-	talgo.Walk(ints, func(i int) {
+	talgo.ForEach(ints, func(i int) {
 		if ints[i]%2 == 0 {
 			even = append(even, ints[i])
 		} else {
@@ -118,7 +144,7 @@ func Test(t *testing.T) {
 		BankAccount{ID: "2", Balance: 0},
 	}
 	accountInDeficit := []string{}
-	talgo.Walk(bankAccounts, func(i int) {
+	talgo.ForEach(bankAccounts, func(i int) {
 		if bankAccounts[i].Balance < 0 {
 			accountInDeficit = append(accountInDeficit, bankAccounts[i].ID)
 		}
