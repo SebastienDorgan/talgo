@@ -2,7 +2,7 @@ package talgo
 
 //Collection a type the satisfies Collection interface can be used by the routines of this package
 type Collection interface {
-	//Len is the numbre of elements of the collection
+	//Len is the number of elements of the collection
 	Len() int
 }
 
@@ -15,31 +15,14 @@ type Predicate func(i int) bool
 //Selector defines a selection function, a selector return i value or j value
 type Selector func(i, j int) int
 
-//Negate negates a predicate
-func Negate(p Predicate) Predicate {
-	return func(i int) bool {
-		return !p(i)
-	}
-}
+//Index use to reindex a collection
+type Index func(i int) int
 
-//Or create a new predicte that is the 'or' of predicate p1 and p2
-func Or(p1 Predicate, p2 Predicate) Predicate {
-	return func(i int) bool {
-		return p1(i) || p2(i)
-	}
-}
-
-//And create a new predicte that is the 'and' of predicate p1 and p2
-func And(p1 Predicate, p2 Predicate) Predicate {
-	return func(i int) bool {
-		return p1(i) && p2(i)
-	}
-}
-
-//Xor create a new predicte that is the 'xor' of predicate p1 and p2
-func Xor(p1 Predicate, p2 Predicate) Predicate {
-	return func(i int) bool {
-		return p1(i) != p2(i)
+//ReverseIndex inverse the index of a collection
+func ReverseIndex(c Collection) Index {
+	l := c.Len()
+	return func(i int) int {
+		return l - i - 1
 	}
 }
 
@@ -66,7 +49,7 @@ func Select(c Collection, s Selector) int {
 	return selected
 }
 
-//FindFirst find the first element of a series that satisfies predicate p
+//FindFirst find the first element of a collections that satisfies predicate p
 func FindFirst(c Collection, p Predicate) int {
 	for i := 0; i < c.Len(); i++ {
 		if p(i) {
@@ -76,7 +59,7 @@ func FindFirst(c Collection, p Predicate) int {
 	return -1
 }
 
-//FindLast find the last element of a series that satisfies predicate p
+//FindLast find the last element of a collections that satisfies predicate p
 func FindLast(c Collection, p Predicate) int {
 	for i := c.Len() - 1; i >= 0; i-- {
 		if p(i) {
@@ -86,9 +69,9 @@ func FindLast(c Collection, p Predicate) int {
 	return -1
 }
 
-//FindAll find all the elements of a series that satisfies predicate p
-func FindAll(c Collection, p Predicate) []int {
-	indexes := []int{}
+//FindAll find all the elements of a collections that satisfies predicate p
+func FindAll(c Collection, p Predicate) IntSlice {
+	var indexes IntSlice
 	for i := 0; i < c.Len(); i++ {
 		if p(i) {
 			indexes = append(indexes, i)
@@ -108,17 +91,19 @@ func CountItems(c Collection, p Predicate) int {
 	return cpt
 }
 
-//Any checks if at least one element of the serie satisfies predicate p
+//Any checks if at least one element of the collection satisfies predicate p
 func Any(c Collection, p Predicate) bool {
-	return FindFirst(c, p) >= 0
+	i := FindFirst(c, p)
+	println(i)
+	return i >= 0
 }
 
-//None checks if at none element of the serie satisfies predicate p
+//None checks if at none element of the collection satisfies predicate p
 func None(c Collection, p Predicate) bool {
 	return !Any(c, p)
 }
 
-//All checks if all elements of the serie satisfy predicate p
+//All checks if all elements of the collection satisfy predicate p
 func All(c Collection, p Predicate) bool {
 	for i := 0; i < c.Len(); i++ {
 		if !p(i) {
