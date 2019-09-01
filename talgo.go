@@ -33,6 +33,12 @@ func ReverseForEach(len int, f Function) {
 	}
 }
 
+func IndexedForEach(len int, index Index, f Function) {
+	for i := 0; i < len; i++ {
+		f(index(i))
+	}
+}
+
 //Select select best element against selector s
 func Select(len int, s Selector) int {
 	selected := 0
